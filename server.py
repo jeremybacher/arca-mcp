@@ -20,7 +20,7 @@ CUIT_REPRESENTADA = os.environ.get("ARCA_CUIT")
 CERT_PATH = os.environ.get("ARCA_CERT_PATH")
 KEY_PATH = os.environ.get("ARCA_KEY_PATH")
 
-mcp = MCPServer("ArcaPadron")
+mcp = MCPServer("ArcaMCP")
 app = Flask(__name__)
 
 ULTIMA_CONSULTA = {"cuit": None, "resultado": None}
