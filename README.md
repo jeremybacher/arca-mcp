@@ -68,6 +68,21 @@ Con la sesión iniciada (paso 1):
    - Segundo botón "Buscar" → seleccioná el certificado/alias que generaste.
    - Confirmá dos veces.
 
+### Cómo revocar la relación (desasociar el certificado)
+
+Si en algún momento querés desasociar el certificado de `ws_sr_padron_a13`
+(por ejemplo, al terminar el parcial):
+
+1. Volvé a **"Administrador de Relaciones de Clave Fiscal"**.
+2. Click en **"CONSULTAR"** (el tercer botón del panel principal).
+3. Buscá entre **"Representantes"** la relación con tu alias (ej.
+   `arca-mcp-local`) y el servicio `ws_sr_padron_a13`.
+4. Seleccionala y usá la opción para **revocarla/darla de baja**.
+
+Esto no borra el certificado en sí (eso se gestiona aparte, desde
+"Administración de Certificados Digitales"), solo quita su autorización para
+usar ese web service puntual.
+
 Ni la clave privada ni el certificado se suben al repositorio (están en
 `.gitignore`).
 
