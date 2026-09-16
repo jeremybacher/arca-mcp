@@ -11,7 +11,12 @@ muestra la última consulta en tiempo real.
 > dominios de los web services y el portal de Clave Fiscal todavía son
 > `afip.gob.ar`), así que las URLs de este proyecto apuntan ahí.
 
-Corre contra el entorno de **homologación** (testing) de ARCA, no producción.
+Corre contra el entorno de **producción** de ARCA: el certificado se gestiona
+desde "Administración de Certificados Digitales" (no desde WSASS, que es
+específico para el entorno de homologación/testing y quedó en desuso para
+este flujo). Como `consultar_cuit` solo lee datos públicos del padrón, el
+riesgo de usar producción es bajo, pero tené presente que las consultas son
+reales.
 
 ## Requisitos previos
 
@@ -31,7 +36,7 @@ Corre contra el entorno de **homologación** (testing) de ARCA, no producción.
 4. Ya logueado, vas a ver el listado de "Servicios habilitados" asociados a
    tu Clave Fiscal.
 
-## 2. Generar el certificado de homologación
+## 2. Generar el certificado
 
 Ningún web service de ARCA es público: hace falta un certificado digital
 propio asociado a tu CUIT.
@@ -40,23 +45,28 @@ propio asociado a tu CUIT.
 mkdir -p certs
 openssl genrsa -out certs/clave_privada.key 2048
 openssl req -new -key certs/clave_privada.key \
-  -subj "/C=AR/O=NombrePropio/CN=NombreDelCertificado/serialNumber=CUIT 20XXXXXXXXX" \
+  -subj "/C=AR/O=TuNombre/CN=arca-mcp-local/serialNumber=CUIT 20XXXXXXXXX" \
   -out certs/solicitud.csr
 ```
 
-Reemplazá `20XXXXXXXXX` por tu CUIT sin guiones (respetando el espacio entre
-`CUIT` y el número).
+Reemplazá `TuNombre` y `20XXXXXXXXX` por tu nombre y tu CUIT sin guiones
+(respetando el espacio entre `CUIT` y el número).
 
 Con la sesión iniciada (paso 1):
 
-1. En el buscador de servicios/trámites escribí **"WSASS"** y entrá a
-   **"WSASS - Autogestión Certificados Homologación"** (si no aparece en tu
-   lista, agregalo primero desde **"Administrador de Relaciones de Clave
-   Fiscal"** → "Adherir servicio").
-2. Elegí **"Nuevo Certificado"** y pegá el contenido de `certs/solicitud.csr`.
-3. Descargá el `.crt` generado y guardalo como `certs/certificado.crt`.
-4. Volvé a **"Administrador de Relaciones de Clave Fiscal"** y asociá ese
-   certificado al servicio **`ws_sr_padron_a13`**.
+1. En el buscador de servicios/trámites escribí **"webser"** y entrá a
+   **"Administración de Certificados Digitales"**.
+2. Click en **"Agregar alias"**. Completá un alias (ej. `arca-mcp-local`) y
+   subí `certs/solicitud.csr` con "Choose File".
+3. Confirmá y descargá el `.crt` generado; guardalo como
+   `certs/certificado.crt`.
+4. Andá a **"Administrador de Relaciones de Clave Fiscal"** → **"Nueva
+   Relación"**:
+   - "Representado": tu propio CUIT (debería salir preseleccionado).
+   - Primer botón "Buscar" → **ARCA → Web Services** → elegí
+     **`ws_sr_padron_a13`**.
+   - Segundo botón "Buscar" → seleccioná el certificado/alias que generaste.
+   - Confirmá dos veces.
 
 Ni la clave privada ni el certificado se suben al repositorio (están en
 `.gitignore`).

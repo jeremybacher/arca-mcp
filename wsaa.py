@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 import zeep
 
-WSAA_WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
+WSAA_WSDL = "https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl"
 
 
 def _generar_tra(servicio: str) -> str:

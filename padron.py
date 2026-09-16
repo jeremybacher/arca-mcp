@@ -1,7 +1,7 @@
 import zeep
 import zeep.helpers
 
-PADRON_A13_WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA13?WSDL"
+PADRON_A13_WSDL = "https://aws.afip.gov.ar/sr-padron/webservices/personaServiceA13?WSDL"
 
 
 def consultar_persona(cuit_representada: str, cuit_consultado: str, token: str, sign: str) -> dict:

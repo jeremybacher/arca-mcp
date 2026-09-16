@@ -17,7 +17,7 @@ def main():
     if not all([cuit, cert, key]):
         sys.exit("Faltan variables de entorno. Copiá .env.example a .env y completalo.")
 
-    print("Autenticando contra WSAA (homologación)...")
+    print("Autenticando contra WSAA...")
     credenciales = wsaa.login("ws_sr_padron_a13", cert, key)
     print("Token obtenido. Expira:", credenciales["expiracion"])
 
