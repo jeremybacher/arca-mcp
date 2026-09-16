@@ -1,4 +1,4 @@
-# Consulta Padrón ARCA MCP
+# ARCA MCP
 
 Servidor MCP que consulta datos de un contribuyente (razón social, estado,
 domicilio fiscal, actividades) en el Padrón de **ARCA** (la Agencia de
@@ -123,7 +123,7 @@ la última consulta en tiempo real.
 ## Estructura del proyecto
 
 ```
-arca_padron_mcp/
+arca_mcp/
 ├── server.py             # MCP tool + servidor web embebido
 ├── wsaa.py                # Login contra WSAA (firma CMS + token/sign)
 ├── padron.py               # Consulta al Padrón (Alcance 13)
