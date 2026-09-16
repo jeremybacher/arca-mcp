@@ -68,20 +68,26 @@ Con la sesión iniciada (paso 1):
    - Segundo botón "Buscar" → seleccioná el certificado/alias que generaste.
    - Confirmá dos veces.
 
-### Cómo revocar la relación (desasociar el certificado)
+### Cómo revocar el acceso (por ejemplo, al terminar el parcial)
 
-Si en algún momento querés desasociar el certificado de `ws_sr_padron_a13`
-(por ejemplo, al terminar el parcial):
+La forma más simple y acotada de cortar el acceso es revocar el
+**certificado** en sí (no la relación): sin un certificado válido, WSAA
+rechaza cualquier login sin importar qué relaciones existan, y la acción
+queda limitada a ese certificado puntual sin tocar ningún otro servicio de tu
+cuenta.
 
-1. Volvé a **"Administrador de Relaciones de Clave Fiscal"**.
-2. Click en **"CONSULTAR"** (el tercer botón del panel principal).
-3. Buscá entre **"Representantes"** la relación con tu alias (ej.
-   `arca-mcp-local`) y el servicio `ws_sr_padron_a13`.
-4. Seleccionala y usá la opción para **revocarla/darla de baja**.
+1. Entrá a **"Administración de Certificados Digitales"** (mismo lugar donde
+   lo generaste).
+2. Buscá el certificado con el alias que usaste (ej. `arca-mcp-local`) en el
+   listado de **"Certificados"**.
+3. Usá la opción para revocarlo/darlo de baja.
 
-Esto no borra el certificado en sí (eso se gestiona aparte, desde
-"Administración de Certificados Digitales"), solo quita su autorización para
-usar ese web service puntual.
+(La otra vía —buscar y revocar la relación puntual en "Administrador de
+Relaciones de Clave Fiscal" → "Consultar"— también funciona, pero ahí la
+relación puede no figurar con un nombre reconocible: puede aparecer con el
+nombre general del servicio, por ejemplo "Sistema registral", mezclada entre
+decenas de otras relaciones que sí necesitás conservar. Preferí revocar el
+certificado.)
 
 Ni la clave privada ni el certificado se suben al repositorio (están en
 `.gitignore`).
