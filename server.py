@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import logging
+import traceback
 from flask import Flask, jsonify, send_from_directory
 from dotenv import load_dotenv
 from mcp.server.mcpserver import MCPServer
@@ -42,11 +43,16 @@ def consultar_cuit(cuit: str) -> dict:
         log(f"consultar_cuit: '{cuit}' no es un CUIT válido")
         return {"error": f"'{cuit}' no es un CUIT válido: debe tener 11 dígitos."}
 
-    log("consultar_cuit: autenticando contra WSAA...")
-    credenciales = wsaa.login(SERVICIO, CERT_PATH, KEY_PATH)
-    log("consultar_cuit: token obtenido, consultando el Padrón...")
-    resultado = padron.consultar_persona(CUIT_REPRESENTADA, cuit, credenciales["token"], credenciales["sign"])
-    log(f"consultar_cuit: consulta de {cuit} completada")
+    try:
+        log("consultar_cuit: autenticando contra WSAA...")
+        credenciales = wsaa.login(SERVICIO, CERT_PATH, KEY_PATH)
+        log("consultar_cuit: token obtenido, consultando el Padrón...")
+        resultado = padron.consultar_persona(CUIT_REPRESENTADA, cuit, credenciales["token"], credenciales["sign"])
+        log(f"consultar_cuit: consulta de {cuit} completada")
+    except Exception as exc:
+        log(f"consultar_cuit: fallo consultando {cuit} -> {exc}")
+        log(traceback.format_exc())
+        return {"error": f"Fallo al consultar ARCA: {exc}"}
 
     ULTIMA_CONSULTA["cuit"] = cuit
     ULTIMA_CONSULTA["resultado"] = resultado
