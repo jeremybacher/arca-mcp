@@ -16,11 +16,11 @@ os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 SERVICIO = "ws_sr_padron_a13"
 
-CUIT_REPRESENTADA = os.environ.get("AFIP_CUIT")
-CERT_PATH = os.environ.get("AFIP_CERT_PATH")
-KEY_PATH = os.environ.get("AFIP_KEY_PATH")
+CUIT_REPRESENTADA = os.environ.get("ARCA_CUIT")
+CERT_PATH = os.environ.get("ARCA_CERT_PATH")
+KEY_PATH = os.environ.get("ARCA_KEY_PATH")
 
-mcp = MCPServer("AfipPadron")
+mcp = MCPServer("ArcaPadron")
 app = Flask(__name__)
 
 ULTIMA_CONSULTA = {"cuit": None, "resultado": None}
@@ -28,7 +28,7 @@ ULTIMA_CONSULTA = {"cuit": None, "resultado": None}
 
 @mcp.tool()
 def consultar_cuit(cuit: str) -> dict:
-    """Consulta los datos de un contribuyente en el Padrón de AFIP a partir de su CUIT."""
+    """Consulta los datos de un contribuyente en el Padrón de ARCA a partir de su CUIT."""
     cuit = cuit.strip().replace("-", "")
     if len(cuit) != 11 or not cuit.isdigit():
         return {"error": f"'{cuit}' no es un CUIT válido: debe tener 11 dígitos."}

@@ -10,9 +10,9 @@ load_dotenv()
 
 
 def main():
-    cuit = os.environ.get("AFIP_CUIT")
-    cert = os.environ.get("AFIP_CERT_PATH")
-    key = os.environ.get("AFIP_KEY_PATH")
+    cuit = os.environ.get("ARCA_CUIT")
+    cert = os.environ.get("ARCA_CERT_PATH")
+    key = os.environ.get("ARCA_KEY_PATH")
 
     if not all([cuit, cert, key]):
         sys.exit("Faltan variables de entorno. Copiá .env.example a .env y completalo.")

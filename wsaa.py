@@ -54,7 +54,7 @@ def _firmar_tra(tra_xml: str, cert_path: str, key_path: str) -> bytes:
 
 
 def login(servicio: str, cert_path: str, key_path: str) -> dict:
-    """Autentica contra WSAA (homologación) y devuelve token, sign y expiración."""
+    """Autentica contra WSAA de ARCA (homologación) y devuelve token, sign y expiración."""
     tra_xml = _generar_tra(servicio)
     cms = _firmar_tra(tra_xml, cert_path, key_path)
     cms_b64 = base64.b64encode(cms).decode("ascii")

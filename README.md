@@ -1,12 +1,17 @@
-# Consulta Padrón AFIP MCP
+# Consulta Padrón ARCA MCP
 
 Servidor MCP que consulta datos de un contribuyente (razón social, estado,
-domicilio fiscal, actividades) en el Padrón de AFIP/ARCA a partir de su CUIT,
-autenticando contra el Web Service de Autenticación y Autorización (WSAA) y
-llamando al servicio de Consulta a Padrón (Alcance 13). Incluye un dashboard
-web que muestra la última consulta en tiempo real.
+domicilio fiscal, actividades) en el Padrón de **ARCA** (la Agencia de
+Recaudación y Control Aduanero, antes AFIP) a partir de su CUIT, autenticando
+contra el Web Service de Autenticación y Autorización (WSAA) y llamando al
+servicio de Consulta a Padrón (Alcance 13). Incluye un dashboard web que
+muestra la última consulta en tiempo real.
 
-Corre contra el entorno de **homologación** (testing) de AFIP, no producción.
+> Nota: ARCA sigue usando la infraestructura técnica heredada de AFIP (los
+> dominios de los web services y el portal de Clave Fiscal todavía son
+> `afip.gob.ar`), así que las URLs de este proyecto apuntan ahí.
+
+Corre contra el entorno de **homologación** (testing) de ARCA, no producción.
 
 ## Requisitos previos
 
@@ -14,10 +19,22 @@ Corre contra el entorno de **homologación** (testing) de AFIP, no producción.
 - OpenSSL (viene instalado en macOS/Linux)
 - Un CUIT propio con Clave Fiscal nivel 3
 
-## 1. Generar el certificado de homologación
+## 1. Cómo iniciar sesión en ARCA (Clave Fiscal)
 
-AFIP no expone ningún servicio sin autenticación: hace falta un certificado
-digital asociado a tu CUIT.
+1. Entrá a **https://www.afip.gob.ar** (el organismo se renombró a ARCA, pero
+   el dominio y el sistema de Clave Fiscal siguen siendo los mismos).
+2. Click en **"Ingresar"**.
+3. Ingresá tu **CUIT** y tu **Clave Fiscal** (la contraseña que gestionás en
+   ese mismo portal). Para administrar certificados de webservices necesitás
+   **nivel de seguridad 3** — si tenés un nivel menor, se sube desde el mismo
+   sitio con un trámite adicional (token de seguridad / verificación).
+4. Ya logueado, vas a ver el listado de "Servicios habilitados" asociados a
+   tu Clave Fiscal.
+
+## 2. Generar el certificado de homologación
+
+Ningún web service de ARCA es público: hace falta un certificado digital
+propio asociado a tu CUIT.
 
 ```bash
 mkdir -p certs
@@ -30,29 +47,29 @@ openssl req -new -key certs/clave_privada.key \
 Reemplazá `20XXXXXXXXX` por tu CUIT sin guiones (respetando el espacio entre
 `CUIT` y el número).
 
-Después, en el sitio de AFIP:
+Con la sesión iniciada (paso 1):
 
-1. Entrá con tu Clave Fiscal a **www.afip.gob.ar**.
-2. Buscá el servicio **"WSASS - Autogestión Certificados Homologación"** (si
-   no aparece en tu lista de servicios, agregalo desde "Administrador de
-   Relaciones de Clave Fiscal").
-3. Elegí **"Nuevo Certificado"** y pegá el contenido de `certs/solicitud.csr`.
-4. Descargá el `.crt` generado y guardalo como `certs/certificado.crt`.
-5. En **"Administrador de Relaciones de Clave Fiscal"**, asociá ese
+1. En el buscador de servicios/trámites escribí **"WSASS"** y entrá a
+   **"WSASS - Autogestión Certificados Homologación"** (si no aparece en tu
+   lista, agregalo primero desde **"Administrador de Relaciones de Clave
+   Fiscal"** → "Adherir servicio").
+2. Elegí **"Nuevo Certificado"** y pegá el contenido de `certs/solicitud.csr`.
+3. Descargá el `.crt` generado y guardalo como `certs/certificado.crt`.
+4. Volvé a **"Administrador de Relaciones de Clave Fiscal"** y asociá ese
    certificado al servicio **`ws_sr_padron_a13`**.
 
 Ni la clave privada ni el certificado se suben al repositorio (están en
 `.gitignore`).
 
-## 2. Configurar variables de entorno
+## 3. Configurar variables de entorno
 
 ```bash
 cp .env.example .env
 ```
 
-Completá `.env` con tu CUIT y las rutas a los archivos generados en el paso 1.
+Completá `.env` con tu CUIT y las rutas a los archivos generados en el paso 2.
 
-## 3. Instalación
+## 4. Instalación
 
 ```bash
 python3 -m venv venv
@@ -60,7 +77,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 4. Verificar la conexión
+## 5. Verificar la conexión
 
 Antes de conectar el MCP, probá la autenticación y la consulta por separado:
 
@@ -71,7 +88,7 @@ python3 verificar_conexion.py
 Si imprime un token y los datos de tu propio CUIT, la configuración es
 correcta.
 
-## 5. Ejecutar el servidor
+## 6. Ejecutar el servidor
 
 ```bash
 python3 server.py
@@ -86,16 +103,27 @@ El archivo `.mcp.json` en la raíz registra el servidor para que el editor lo
 detecte automáticamente al abrir esta carpeta. No contiene credenciales: las
 lee `server.py` desde `.env` en tiempo de ejecución.
 
+## Cómo usarlo (con Claude Code)
+
+Con el servidor conectado (Claude Code detecta `.mcp.json` al abrir esta
+carpeta) y el dashboard abierto en `http://127.0.0.1:5050`, simplemente
+pedile en el chat que use la herramienta, por ejemplo:
+
+> "Consultá el CUIT 20XXXXXXXXX en el padrón de ARCA."
+
+Claude va a llamar a `consultar_cuit`, y en el dashboard vas a ver reflejada
+la última consulta en tiempo real.
+
 ## Herramientas expuestas por el MCP
 
 | Herramienta | Descripción |
 |---|---|
-| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta los datos del CUIT en el Padrón de AFIP. |
+| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta los datos del CUIT en el Padrón de ARCA. |
 
 ## Estructura del proyecto
 
 ```
-afip_padron_mcp/
+arca_padron_mcp/
 ├── server.py             # MCP tool + servidor web embebido
 ├── wsaa.py                # Login contra WSAA (firma CMS + token/sign)
 ├── padron.py               # Consulta al Padrón (Alcance 13)
