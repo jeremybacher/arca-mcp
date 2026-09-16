@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta Padrón AFIP - MCP Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e2e;
+            color: #cdd6f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            color: #89b4fa;
+        }
+
+        pre {
+            width: 500px;
+            background-color: #313244;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Monitor de Consultas al Padrón AFIP</h1>
+    <div style="font-size: 0.9em; margin-bottom: 12px; color: #a6adc8;">Actualización en tiempo real vía HTTP Polling
+        (400ms)</div>
+
+    <pre id="raw">Esperando una consulta...</pre>
+
+    <script>
+        async function actualizar() {
+            try {
+                const res = await fetch("/estado?t=" + Date.now(), { cache: "no-store" });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById("raw").textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (err) {
+                // Servidor cargando
+            }
+        }
+
+        setInterval(actualizar, 400);
+        actualizar();
+    </script>
+</body>
+
+</html>

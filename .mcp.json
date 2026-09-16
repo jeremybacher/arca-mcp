@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "afip-padron": {
+      "command": "python3",
+      "args": ["server.py"]
+    }
+  }
+}
