@@ -85,7 +85,12 @@ def consultar_estado():
 def ejecutar_web():
     from werkzeug.serving import make_server
 
-    server = make_server("127.0.0.1", 5050, app)
+    try:
+        server = make_server("127.0.0.1", 5050, app)
+    except OSError as exc:
+        log(f"Dashboard: no se pudo levantar en el puerto 5050 ({exc}).")
+        log("Probablemente ya haya otro proceso server.py corriendo: 'ps aux | grep server.py' y matalo.")
+        return
     server.serve_forever()
 
 
