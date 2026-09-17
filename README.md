@@ -149,7 +149,7 @@ la última consulta en tiempo real.
 
 | Herramienta | Descripción |
 |---|---|
-| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta los datos del CUIT en el Padrón de ARCA. |
+| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta el CUIT en el Padrón de ARCA. Devuelve solo nombre, apellido, estado, actividad principal y tipo de persona — el resto (DNI, fecha de nacimiento, domicilio) se descarta a propósito antes de responder. |
 
 ## Estructura del proyecto
 
