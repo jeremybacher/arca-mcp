@@ -1,5 +1,8 @@
 # ARCA MCP
 
+> Este es un proyecto personal e independiente, sin ninguna afiliación,
+> respaldo ni vínculo oficial con ARCA, AFIP ni el Estado argentino.
+
 Servidor MCP que consulta datos de un contribuyente (razón social, estado,
 domicilio fiscal, actividades) en el Padrón de **ARCA** (la Agencia de
 Recaudación y Control Aduanero, antes AFIP) a partir de su CUIT, autenticando
@@ -134,16 +137,55 @@ El archivo `.mcp.json` en la raíz registra el servidor para que el editor lo
 detecte automáticamente al abrir esta carpeta. No contiene credenciales: las
 lee `server.py` desde `.env` en tiempo de ejecución.
 
-## Cómo usarlo (con Claude Code)
+## Cómo usarlo
 
-Con el servidor conectado (Claude Code detecta `.mcp.json` al abrir esta
-carpeta) y el dashboard abierto en `http://127.0.0.1:5050`, simplemente
-pedile en el chat que use la herramienta, por ejemplo:
+Una vez conectado el servidor MCP (con cualquiera de los clientes de abajo) y
+el dashboard abierto en `http://127.0.0.1:5050`, simplemente pedile en el
+chat que use la herramienta, por ejemplo:
 
 > "Consultá el CUIT 20XXXXXXXXX en el padrón de ARCA."
 
-Claude va a llamar a `consultar_cuit`, y en el dashboard vas a ver reflejada
-la última consulta en tiempo real.
+El asistente va a llamar a `consultar_cuit`, y en el dashboard vas a ver
+reflejada la última consulta en tiempo real.
+
+### Claude Code
+
+Al abrir esta carpeta como proyecto, Claude Code detecta automáticamente el
+`.mcp.json` de la raíz y te va a pedir confirmación para habilitar el
+servidor `arca-mcp`.
+
+### Claude Desktop
+
+Claude Desktop no lee `.mcp.json`: hay que registrar el servidor a mano en su
+config global.
+
+1. Abrí (o creá) el archivo de configuración:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+2. Agregá una entrada con **rutas absolutas** (Claude Desktop no corre desde
+   la carpeta del proyecto, así que las rutas relativas no funcionan):
+
+   ```json
+   {
+     "mcpServers": {
+       "arca-mcp": {
+         "command": "/ruta/absoluta/a/arca-mcp/venv/bin/python3",
+         "args": ["/ruta/absoluta/a/arca-mcp/server.py"]
+       }
+     }
+   }
+   ```
+
+3. Reiniciá Claude Desktop. El servidor va a aparecer en el ícono de
+   herramientas (🔨) del chat.
+
+### Otros clientes MCP (Cursor, Windsurf, etc.)
+
+Cualquier cliente que soporte el transporte estándar de MCP por stdio
+funciona con el mismo patrón: apuntar `command` al Python del `venv` y
+`args` a `server.py`, con rutas absolutas. Revisá la documentación propia de
+cada cliente para saber dónde va ese JSON (suele ser un archivo de
+configuración de MCP servers similar al de Claude Desktop).
 
 ## Herramientas expuestas por el MCP
 
