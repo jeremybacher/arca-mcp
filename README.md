@@ -149,19 +149,39 @@ la última consulta en tiempo real.
 
 | Herramienta | Descripción |
 |---|---|
-| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta el CUIT en el Padrón de ARCA. Devuelve solo nombre, apellido, estado, actividad principal y tipo de persona — el resto (DNI, fecha de nacimiento, domicilio) se descarta a propósito antes de responder. |
+| `consultar_cuit(cuit)` | Autentica contra WSAA y consulta el CUIT en el Padrón de ARCA. Devuelve solo nombre, apellido, estado, actividad principal y tipo de persona — el resto (DNI, fecha de nacimiento, domicilio) se descarta a propósito antes de responder. Si el CUIT ya fue consultado antes, devuelve el resultado guardado en el historial local sin volver a llamar a ARCA. |
+| `historial_consultas(limite=20)` | Lista las últimas consultas guardadas en el historial local (SQLite). |
+| `buscar_en_historial(cuit)` | Busca si ya existe una consulta guardada para un CUIT, sin llamar a ARCA. |
+
+## Historial de consultas
+
+Cada consulta exitosa a `consultar_cuit` se guarda en `historial.db` (SQLite,
+no se versiona). Las próximas consultas al mismo CUIT se responden desde ese
+historial en vez de volver a autenticar y consultar el Padrón. El dashboard
+web también expone este historial en `http://127.0.0.1:5050/historial`.
+
+## Tests
+
+```bash
+pytest
+```
 
 ## Estructura del proyecto
 
 ```
-arca_mcp/
-├── server.py             # MCP tool + servidor web embebido
-├── wsaa.py                # Login contra WSAA (firma CMS + token/sign)
+arca-mcp/
+├── server.py             # MCP tools + servidor web embebido
+├── wsaa.py                # Login contra WSAA (firma CMS + token/sign, con cache)
 ├── padron.py               # Consulta al Padrón (Alcance 13)
+├── historia.py              # Historial de consultas (SQLite)
 ├── verificar_conexion.py    # Script manual para probar la conexión
 ├── index.html                # Dashboard con actualización en tiempo real
+├── tests/                      # Suite de tests (pytest)
 ├── certs/                     # Certificado y clave privada (no se versionan)
+├── historial.db                # Historial de consultas (se genera solo, no se versiona)
+├── token_cache.json            # Cache del token de WSAA (se genera solo, no se versiona)
 ├── requirements.txt
+├── pytest.ini
 ├── .env.example
 ├── .mcp.json
 └── README.md
