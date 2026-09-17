@@ -1,19 +1,19 @@
+import logging
 import os
 import sys
 import threading
-import logging
 import traceback
-from flask import Flask, jsonify, send_from_directory
-from dotenv import load_dotenv
-from mcp.server.mcpserver import MCPServer
 
-import wsaa
 import padron
+import wsaa
+from dotenv import load_dotenv
+from flask import Flask, jsonify, send_from_directory
+from mcp.server.mcpserver import MCPServer
 
 load_dotenv()
 
-logging.getLogger('werkzeug').disabled = True
-os.environ['WERKZEUG_RUN_MAIN'] = 'true'
+logging.getLogger("werkzeug").disabled = True
+os.environ["WERKZEUG_RUN_MAIN"] = "true"
 
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 SERVICIO = "ws_sr_padron_a13"
@@ -47,7 +47,9 @@ def consultar_cuit(cuit: str) -> dict:
         log("consultar_cuit: autenticando contra WSAA...")
         credenciales = wsaa.login(SERVICIO, CERT_PATH, KEY_PATH)
         log("consultar_cuit: token obtenido, consultando el Padrón...")
-        resultado = padron.consultar_persona(CUIT_REPRESENTADA, cuit, credenciales["token"], credenciales["sign"])
+        resultado = padron.consultar_persona(
+            CUIT_REPRESENTADA, cuit, credenciales["token"], credenciales["sign"]
+        )
         log(f"consultar_cuit: consulta de {cuit} completada")
     except Exception as exc:
         log(f"consultar_cuit: fallo consultando {cuit} -> {exc}")
@@ -73,6 +75,7 @@ def consultar_estado():
 
 def ejecutar_web():
     from werkzeug.serving import make_server
+
     server = make_server("127.0.0.1", 5050, app)
     server.serve_forever()
 

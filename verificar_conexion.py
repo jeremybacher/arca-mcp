@@ -3,8 +3,8 @@ import sys
 
 from dotenv import load_dotenv
 
-import wsaa
 import padron
+import wsaa
 
 load_dotenv()
 
