@@ -27,10 +27,18 @@ app = Flask(__name__)
 
 ULTIMA_CONSULTA = {"cuit": None, "resultado": None}
 
+CAMPOS_PUBLICOS = ("nombre", "apellido", "razonSocial", "estadoClave", "descripcionActividadPrincipal", "tipoPersona")
+
 
 def log(mensaje: str) -> None:
     # stderr, nunca stdout: mcp.run() usa stdout para el protocolo stdio.
     print(mensaje, file=sys.stderr, flush=True)
+
+
+def _datos_minimos(persona: dict) -> dict:
+    # No exponemos DNI, fecha de nacimiento ni domicilio: son más datos
+    # personales de los que hace falta mostrar en una demo grabada.
+    return {campo: persona[campo] for campo in CAMPOS_PUBLICOS if persona.get(campo) is not None}
 
 
 @mcp.tool()
@@ -50,6 +58,7 @@ def consultar_cuit(cuit: str) -> dict:
         resultado = padron.consultar_persona(
             CUIT_REPRESENTADA, cuit, credenciales["token"], credenciales["sign"]
         )
+        resultado = {"persona": _datos_minimos(resultado.get("persona", {}))}
         log(f"consultar_cuit: consulta de {cuit} completada")
     except Exception as exc:
         log(f"consultar_cuit: fallo consultando {cuit} -> {exc}")
